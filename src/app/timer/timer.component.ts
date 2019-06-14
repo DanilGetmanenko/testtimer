@@ -11,14 +11,14 @@ import { TimerService } from './timer.service';
     `,
     styles: [ `
         h1 {
-            color: #57acec;
+            color: #559acec;
             margin-top: 24px; 
             text-align: center;   
         }    
     `]
 })
 export class TimerComponent implements OnInit, OnDestroy {
-    private playPauseStopUnsubscribe: any;
+    private playWaitStopResetUnsubscribe: any;
 
     start = 0;
     ticks = 0;
@@ -33,20 +33,22 @@ export class TimerComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.playPauseStopUnsubscribe = this.timerService.playPauseStop$.subscribe((res: any) => this.playPauseStop(res));
+        this.playWaitStopResetUnsubscribe = this.timerService.playWaitStopReset$.subscribe((res: any) => this.playWaitStopReset(res));
     }
 
     ngOnDestroy() {
-        this.playPauseStopUnsubscribe.unsubscribe();;
+        this.playWaitStopResetUnsubscribe.unsubscribe();;
     }
 
-    private playPauseStop(res: any) {
+    private playWaitStopReset(res: any) {
         if(res.play) {
             this.startTimer();
-        } else if(res.pause) {
-            this.pauseTimer();
-        } else if (res.stop) {
+        } else if(res.wait){
+          this.waitTimer();
+        } else if(res.stop) {
             this.stopTimer();
+        } else if (res.reset) { 
+            this.resetTimer();
         }
     }
 
@@ -64,12 +66,20 @@ export class TimerComponent implements OnInit, OnDestroy {
         );
     }
 
-    private pauseTimer() {
+    private waitTimer(){
+        this.start =++this.ticks;
+        if (this.sub) this.sub.unsubscribe();
+        setTimeout(() => {
+            this.startTimer();
+          }, 2000);
+    }
+
+    private stopTimer() {
         this.start = ++this.ticks;
         if (this.sub) this.sub.unsubscribe();
     }
 
-    private stopTimer() {
+    private resetTimer() {
         this.start = 0;
         this.ticks = 0;
 

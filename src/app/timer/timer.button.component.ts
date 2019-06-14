@@ -6,8 +6,9 @@ import { TimerService } from './timer.service';
     template: `
         <div>
             <button [disabled]="play" (click)="playTimer()">Play</button>
-            <button [disabled]="!play" (click)="pauseTimer()">Pause</button>
+            <button (click)="waitTimer()">Wait</button>
             <button (click)="stopTimer()">Stop</button>
+            <button (click)="resetTimer()">Reset</button>
         </div>
     `,
     styles: [`
@@ -18,34 +19,39 @@ import { TimerService } from './timer.service';
 })
 export class ButtonsComponent implements OnInit, OnDestroy {
 
-    private playPauseStopUnsubscribe: any;
+    private playWaitStopResetUnsubscribe: any;
     private play: boolean;
+
 
     constructor(private timerService: TimerService) {
     }
 
     ngOnInit() {
-        this.playPauseStopUnsubscribe = this.timerService.playPauseStop$.subscribe((res: any) => this.setPlay(res));       
+        this.playWaitStopResetUnsubscribe = this.timerService.playWaitStopReset$.subscribe((res: any) => this.setPlay(res));       
     }
 
     ngOnDestroy() {
-        this.playPauseStopUnsubscribe.unsubscribe();
+        this.playWaitStopResetUnsubscribe.unsubscribe();
     }
 
     private setPlay(res: any) {
-        (res.play) ? this.play = true : this.play = false;
+        (res.play) ? this.play = true : this.play = false;  
     }
 
     playTimer() {
         this.timerService.playTimer();
     }
 
-    pauseTimer() {
-        this.timerService.pauseTimer();
+    waitTimer() {
+        this.timerService.waitTimer();
     }
 
     stopTimer() {
         this.timerService.stopTimer();
+    }
+
+    resetTimer() {
+        this.timerService.resetTimer();
     }
 
 }
